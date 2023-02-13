@@ -94,8 +94,7 @@ contract CryptoDevsDAO is Ownable {
         proposal.deadline = block.timestamp + 5 minutes;
 
         numProposals++;
-
+                    
         return numProposals - 1;
     }
-    
 }
