@@ -94,7 +94,19 @@ contract CryptoDevsDAO is Ownable {
         proposal.deadline = block.timestamp + 5 minutes;
 
         numProposals++;
-                    
+
         return numProposals - 1;
     }
+
+    // Create a modifier which only allows a function to be
+    // called if the given proposal's deadline has not been exceeded yet
+    modifier activeProposalOnly(uint256 proposalIndex) {
+        require(
+            proposals[proposalIndex].deadline > block.timestamp,
+            "DEADLINE_EXCEEDED"
+        );
+        _;
+    }
+
+    
 }
