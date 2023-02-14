@@ -116,6 +116,33 @@ export default function Home() {
     }
   };
 
-  
+  // Reads the balance of the user's CryptoDevs NFTs and sets the `nftBalance` state variable
+  const getUserNFTBalance = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const nftContract = getCryptodevsNFTContractInstance(signer);
+      const balance = await nftContract.balanceOf(signer.getAddress());
+      setNftBalance(parseInt(balance.toString()));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  // Calls the `createProposal` function in the contract, using the tokenId from `fakeNftTokenId`
+  const createProposal = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const daoContract = getDaoContractInstance(signer);
+      const txn = await daoContract.createProposal(fakeNftTokenId);
+      setLoading(true);
+      await txn.wait();
+      await getNumProposalsInDAO();
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      window.alert(error.reason);
+    }
+  };
+
+  
 }
