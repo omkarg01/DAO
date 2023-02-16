@@ -216,4 +216,22 @@ export default function Home() {
       window.alert(error.reason);
     }
   };
+
+  // Helper function to fetch a Provider/Signer instance from Metamask
+  const getProviderOrSigner = async (needSigner = false) => {
+    const provider = await web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
+
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 5) {
+      window.alert("Please switch to the Goerli network!");
+      throw new Error("Please switch to the Goerli network");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+    return web3Provider;
+  };
 }
