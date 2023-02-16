@@ -166,7 +166,54 @@ export default function Home() {
     }
   };
 
-  
+  // Runs a loop `numProposals` times to fetch all proposals in the DAO
+  // and sets the `proposals` state variable
+  const fetchAllProposals = async () => {
+    try {
+      const proposals = [];
+      for (let i = 0; i < numProposals; i++) {
+        const proposal = await fetchProposalById(i);
+        proposals.push(proposal);
+      }
+      setProposals(proposals);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  // Calls the `voteOnProposal` function in the contract, using the passed
+  // proposal ID and Vote
+  const voteOnProposal = async (proposalId, _vote) => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const daoContract = getDaoContractInstance(signer);
 
+      let vote = _vote === "YAY" ? 0 : 1;
+      const txn = await daoContract.voteOnProposal(proposalId, vote);
+      setLoading(true);
+      await txn.wait();
+      setLoading(false);
+      await fetchAllProposals();
+    } catch (error) {
+      console.error(error);
+      window.alert(error.reason);
+    }
+  };
+
+  // Calls the `executeProposal` function in the contract, using
+  // the passed proposal ID
+  const executeProposal = async (proposalId) => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const daoContract = getDaoContractInstance(signer);
+      const txn = await daoContract.executeProposal(proposalId);
+      setLoading(true);
+      await txn.wait();
+      setLoading(false);
+      await fetchAllProposals();
+    } catch (error) {
+      console.error(error);
+      window.alert(error.reason);
+    }
+  };
 }
